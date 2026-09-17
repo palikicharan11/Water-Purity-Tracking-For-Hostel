@@ -1,0 +1,10 @@
+Date,Location,pH,TDS_mg_L,Turbidity_NTU,Hardness_mg_L,Chlorine_mg_L,Nitrates_mg_L,Fluoride_mg_L,Coliform_MPN,WQI,Status
+2026-07-20,Block A - Overhead Tank,7.2,280,1.2,180,0.4,12,0.8,0,91.5,Excellent
+2026-07-22,Mess - RO Dispenser 1,6.9,85,0.4,45,0.2,5,0.5,0,98.2,Excellent
+2026-07-24,Block B - Main Sump,8.2,520,4.8,320,0.1,38,1.4,12,54.2,Poor (Requires Treatment)
+2026-07-26,Block C - Washroom Supply,6.1,680,6.5,410,0.0,55,1.9,45,32.8,Very Poor (Unsafe)
+2026-07-28,Mess - Kitchen Tap,7.5,310,1.8,210,0.3,18,0.9,0,88.4,Good
+2026-07-28,Girls Hostel - Central Sump,7.3,150.0,0.8,120.0,0.4,10.0,0.7,0.0,96.0,Excellent (Safe Drinking Water)
+2026-08-03,Block A - Overhead Tank,4.4,420.0,1.2,100.0,0.4,12.0,0.8,0.0,56.7,Poor (Requires Purification)
+2026-08-03,Block A - Overhead Tank,4.4,420.0,1.2,100.0,0.4,12.0,0.8,0.0,56.7,Poor (Requires Purification)
+2026-08-03,Block A - Overhead Tank,4.4,420.0,1.2,100.0,0.4,12.0,0.8,0.0,56.7,Poor (Requires Purification)

@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Water Purity Tracker for Hostel | Advanced Water Quality & AI Treatment Suite</title>
+    <meta name="description" content="Professional Water Purity Tracking & AI Treatment System for Hostels aligned with Engineering Chemistry and WHO/BIS IS:10500 standards. Features live IoT telemetry, process flow simulation, tank comparisons, and maintenance schedules.">
+    <!-- Google Fonts & Font Awesome Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Ambient Animated Background Particles & Bubbles -->
+    <div class="ambient-bg">
+        <div class="bubble bubble-1"></div>
+        <div class="bubble bubble-2"></div>
+        <div class="bubble bubble-3"></div>
+        <div class="bubble bubble-4"></div>
+        <div class="bubble bubble-5"></div>
+    </div>
+
+    <!-- Header Navigation -->
+    <header class="navbar">
+        <div class="logo-area">
+            <div class="logo-icon pulsing-glow">
+                <i class="fa-solid fa-droplet fa-bounce" style="--fa-animation-duration: 2.5s;"></i>
+            </div>
+            <div>
+                <h1>Water Purity Tracker <span class="badge-tag glow-cyan"><i class="fa-solid fa-microchip"></i> Hostel AI</span></h1>
+                <p class="subtitle">Hostel Water Telemetry, Chemical Rule Engine & Purification Suite</p>
+            </div>
+        </div>
+
+        <div class="nav-controls">
+            <!-- Live IoT Sensor Toggle -->
+            <button id="btn-iot-toggle" class="btn btn-iot-live">
+                <span class="live-pulse-dot"></span>
+                <i class="fa-solid fa-signal"></i> IoT Live Stream: <span id="iot-status-text">OFF</span>
+            </button>
+            <button id="btn-compare-modal" class="btn btn-secondary">
+                <i class="fa-solid fa-code-compare"></i> Compare Tanks
+            </button>
+            <button id="btn-print-report" class="btn btn-secondary">
+                <i class="fa-solid fa-print"></i> Lab Certificate
+            </button>
+            <button id="btn-export-csv" class="btn btn-primary">
+                <i class="fa-solid fa-file-csv"></i> Export CSV
+            </button>
+        </div>
+    </header>
+
+    <main class="dashboard-container">
+        
+        <!-- Live Alert Banner (Dynamic) -->
+        <div id="live-alert-banner" class="alert-banner hidden">
+            <div class="alert-content">
+                <i class="fa-solid fa-triangle-exclamation fa-beat"></i>
+                <span id="alert-banner-text">Warning: High Coliform Bacteria detected in Block B Sump! Immediate UV treatment required.</span>
+            </div>
+            <button class="alert-close" onclick="document.getElementById('live-alert-banner').classList.add('hidden')">&times;</button>
+        </div>
+
+        <!-- Metric KPI Cards -->
+        <section class="stats-grid">
+            <div class="stat-card glass-glow">
+                <div class="stat-icon cyan pulse-icon"><i class="fa-solid fa-gauge-high"></i></div>
+                <div>
+                    <span class="stat-label">Current Water Quality Index</span>
+                    <div class="stat-value gradient-text" id="stat-wqi">91.5</div>
+                    <span class="stat-sub safe" id="stat-wqi-sub"><i class="fa-solid fa-circle-check"></i> Excellent Grade</span>
+                </div>
+            </div>
+            <div class="stat-card glass-glow">
+                <div class="stat-icon green spin-icon"><i class="fa-solid fa-filter"></i></div>
+                <div>
+                    <span class="stat-label">Purification Stage</span>
+                    <div class="stat-value" id="stat-purify-stage">RO + UV Active</div>
+                    <span class="stat-sub" id="stat-stage-sub">Optimal Membrane Efficiency</span>
+                </div>
+            </div>
+            <div class="stat-card glass-glow">
+                <div class="stat-icon orange shake-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                <div>
+                    <span class="stat-label">Contaminant Alerts</span>
+                    <div class="stat-value" id="stat-alerts">0 Active</div>
+                    <span class="stat-sub safe" id="stat-alerts-sub">BIS IS:10500 Compliant</span>
+                </div>
+            </div>
+            <div class="stat-card glass-glow">
+                <div class="stat-icon purple float-icon"><i class="fa-solid fa-faucet-drip"></i></div>
+                <div>
+                    <span class="stat-label">Hostel Water Dispensed</span>
+                    <div class="stat-value" id="stat-volume">14,250 L/day</div>
+                    <span class="stat-sub">Across 5 Storage Tanks</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Purification Process Flow Simulator -->
+        <section class="card process-flow-card">
+            <div class="card-header">
+                <h2><i class="fa-solid fa-diagram-project fa-spin" style="--fa-animation-duration: 15s;"></i> Interactive Purification Pipeline Flow Simulator</h2>
+                <span class="pill-info"><i class="fa-solid fa-circle-play"></i> Click stages to inspect process chemistry</span>
+            </div>
+
+            <div class="pipeline-flow-container">
+                <!-- Step 1: Raw Water Input -->
+                <div class="pipeline-step active" onclick="showStageInfo('raw')">
+                    <div class="step-icon"><i class="fa-solid fa-water"></i></div>
+                    <div class="step-info">
+                        <span class="step-num">01</span>
+                        <span class="step-title">Raw Water Sump</span>
+                    </div>
+                    <div class="flow-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                </div>
+
+                <!-- Step 2: Coagulation & Flocculation -->
+                <div class="pipeline-step" onclick="showStageInfo('coagulation')">
+                    <div class="step-icon"><i class="fa-solid fa-vial-virus"></i></div>
+                    <div class="step-info">
+                        <span class="step-num">02</span>
+                        <span class="step-title">Alum Coagulation</span>
+                    </div>
+                    <div class="flow-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                </div>
+
+                <!-- Step 3: Sand & Carbon Filter -->
+                <div class="pipeline-step" onclick="showStageInfo('filter')">
+                    <div class="step-icon"><i class="fa-solid fa-layer-group"></i></div>
+                    <div class="step-info">
+                        <span class="step-num">03</span>
+                        <span class="step-title">Sand Bed & Carbon</span>
+                    </div>
+                    <div class="flow-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                </div>
+
+                <!-- Step 4: Reverse Osmosis (RO) -->
+                <div class="pipeline-step" onclick="showStageInfo('ro')">
+                    <div class="step-icon"><i class="fa-solid fa-cubes-stacked"></i></div>
+                    <div class="step-info">
+                        <span class="step-num">04</span>
+                        <span class="step-title">RO Membrane</span>
+                    </div>
+                    <div class="flow-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                </div>
+
+                <!-- Step 5: UV Disinfection -->
+                <div class="pipeline-step" onclick="showStageInfo('uv')">
+                    <div class="step-icon"><i class="fa-solid fa-sun-plant-wilt"></i></div>
+                    <div class="step-info">
+                        <span class="step-num">05</span>
+                        <span class="step-title">UV Sterilization</span>
+                    </div>
+                    <div class="flow-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                </div>
+
+                <!-- Step 6: Pure Hostel Dispenser -->
+                <div class="pipeline-step" onclick="showStageInfo('pure')">
+                    <div class="step-icon pure-glow"><i class="fa-solid fa-glass-water"></i></div>
+                    <div class="step-info">
+                        <span class="step-num">06</span>
+                        <span class="step-title">Hostel Tap Output</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dynamic Pipeline Detail Text -->
+            <div id="pipeline-detail-box" class="pipeline-detail-box">
+                <i class="fa-solid fa-info-circle"></i>
+                <span id="pipeline-detail-text">Select any purification stage above to view chemical operations, pressure drops, and filter media specs.</span>
+            </div>
+        </section>
+
+        <!-- Main Workspace: Interactive Controls + Gauges + AI Advisor -->
+        <div class="workspace-grid">
+            
+            <!-- Left Column: Parameter Control Laboratory -->
+            <section class="card input-card">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-sliders fa-flip-horizontal"></i> Water Parameter Control Lab</h2>
+                    <div class="preset-buttons">
+                        <button type="button" class="btn-xs" onclick="applyPreset('clean')">Pure RO</button>
+                        <button type="button" class="btn-xs" onclick="applyPreset('hard')">Hard Water</button>
+                        <button type="button" class="btn-xs" onclick="applyPreset('dirty')">Contaminated</button>
+                    </div>
+                </div>
+
+                <form id="water-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="location-select"><i class="fa-solid fa-building-user"></i> Hostel Location / Storage Tank</label>
+                            <select id="location-select" class="form-control">
+                                <option value="Block A - Overhead Tank">Block A - Overhead Tank</option>
+                                <option value="Mess - RO Dispenser 1">Mess - RO Dispenser 1</option>
+                                <option value="Block B - Main Sump">Block B - Main Sump</option>
+                                <option value="Block C - Washroom Supply">Block C - Washroom Supply</option>
+                                <option value="Mess - Kitchen Tap">Mess - Kitchen Tap</option>
+                                <option value="Girls Hostel - Central Sump">Girls Hostel - Central Sump</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="sample-date"><i class="fa-solid fa-calendar-check"></i> Sampling Date</label>
+                            <input type="date" id="sample-date" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="parameters-grid">
+                        
+                        <!-- pH Level -->
+                        <div class="param-box" onclick="openChemModal('ph')">
+                            <div class="param-header">
+                                <label for="input-ph"><i class="fa-solid fa-vial-circle-check icon-glow"></i> pH Scale <i class="fa-solid fa-circle-info info-icon"></i></label>
+                                <span class="param-val" id="val-ph">7.2</span>
+                            </div>
+                            <input type="range" id="input-ph" min="4.0" max="11.0" step="0.1" value="7.2">
+                            <div class="visual-scale ph-gradient"></div>
+                            <div class="param-hint">BIS Standard: 6.5 - 8.5 (Neutral: 7.0)</div>
+                        </div>
+
+                        <!-- TDS -->
+                        <div class="param-box" onclick="openChemModal('tds')">
+                            <div class="param-header">
+                                <label for="input-tds"><i class="fa-solid fa-cubes icon-glow"></i> TDS (mg/L) <i class="fa-solid fa-circle-info info-icon"></i></label>
+                                <span class="param-val" id="val-tds">280</span>
+                            </div>
+                            <input type="range" id="input-tds" min="20" max="1500" step="10" value="280">
+                            <div class="visual-scale tds-gradient"></div>
+                            <div class="param-hint">Desirable: < 500 mg/L</div>
+                        </div>
+
+                        <!-- Turbidity -->
+                        <div class="param-box" onclick="openChemModal('turbidity')">
+                            <div class="param-header">
+                                <label for="input-turbidity"><i class="fa-solid fa-cloud-sun icon-glow"></i> Turbidity (NTU) <i class="fa-solid fa-circle-info info-icon"></i></label>
+                                <span class="param-val" id="val-turbidity">1.2</span>
+                            </div>
+                            <input type="range" id="input-turbidity" min="0.1" max="15.0" step="0.1" value="1.2">
+                            <div class="visual-scale turb-gradient"></div>
+                            <div class="param-hint">Desirable: < 1.0 | Limit: 5.0</div>
+                        </div>
+
+                        <!-- Hardness -->
+                        <div class="param-box" onclick="openChemModal('hardness')">
+                            <div class="param-header">
+                                <label for="input-hardness"><i class="fa-solid fa-gem icon-glow"></i> Hardness (mg/L) <i class="fa-solid fa-circle-info info-icon"></i></label>
+                                <span class="param-val" id="val-hardness">180</span>
+                            </div>
+                            <input type="range" id="input-hardness" min="10" max="600" step="5" value="180">
+                            <div class="visual-scale hard-gradient"></div>
+                            <div class="param-hint">Limit: < 300 mg/L Ca/Mg</div>
+                        </div>
+
+                        <!-- Chlorine -->
+                        <div class="param-box" onclick="openChemModal('chlorine')">
+                            <div class="param-header">
+                                <label for="input-chlorine"><i class="fa-solid fa-bottle-droplet icon-glow"></i> Free Chlorine <i class="fa-solid fa-circle-info info-icon"></i></label>
+                                <span class="param-val" id="val-chlorine">0.4</span>
+                            </div>
+                            <input type="range" id="input-chlorine" min="0.0" max="3.0" step="0.1" value="0.4">
+                            <div class="visual-scale chlorine-gradient"></div>
+                            <div class="param-hint">Residual Range: 0.2 - 1.0 mg/L</div>
+                        </div>
+
+                        <!-- Nitrates -->
+                        <div class="param-box" onclick="openChemModal('nitrates')">
+                            <div class="param-header">
+                                <label for="input-nitrates"><i class="fa-solid fa-flask icon-glow"></i> Nitrates (mg/L) <i class="fa-solid fa-circle-info info-icon"></i></label>
+                                <span class="param-val" id="val-nitrates">12</span>
+                            </div>
+                            <input type="range" id="input-nitrates" min="0" max="100" step="1" value="12">
+                            <div class="visual-scale nitrate-gradient"></div>
+                            <div class="param-hint">Max Limit: 45 mg/L</div>
+                        </div>
+
+                        <!-- Fluoride -->
+                        <div class="param-box" onclick="openChemModal('fluoride')">
+                            <div class="param-header">
+                                <label for="input-fluoride"><i class="fa-solid fa-tooth icon-glow"></i> Fluoride (mg/L) <i class="fa-solid fa-circle-info info-icon"></i></label>
+                                <span class="param-val" id="val-fluoride">0.8</span>
+                            </div>
+                            <input type="range" id="input-fluoride" min="0.1" max="4.0" step="0.1" value="0.8">
+                            <div class="visual-scale fluoride-gradient"></div>
+                            <div class="param-hint">Ideal: 0.8 - 1.5 mg/L</div>
+                        </div>
+
+                        <!-- Coliform -->
+                        <div class="param-box" onclick="openChemModal('coliform')">
+                            <div class="param-header">
+                                <label for="input-coliform"><i class="fa-solid fa-bacterium icon-glow"></i> Coliform Bacteria <i class="fa-solid fa-circle-info info-icon"></i></label>
+                                <span class="param-val" id="val-coliform">0</span>
+                            </div>
+                            <input type="range" id="input-coliform" min="0" max="100" step="1" value="0">
+                            <div class="visual-scale coliform-gradient"></div>
+                            <div class="param-hint">Mandatory: 0 MPN/100ml</div>
+                        </div>
+
+                    </div>
+
+                    <button type="button" id="btn-save-record" class="btn btn-primary btn-block glow-cyan">
+                        <i class="fa-solid fa-floppy-disk"></i> Log Test Sample to CSV Database
+                    </button>
+                </form>
+            </section>
+
+            <!-- Right Column: Live WQI Ring & AI Advisor -->
+            <div class="results-column">
+                
+                <!-- Score & Evaluation Card -->
+                <section class="card gauge-card glass-glow">
+                    <div class="card-header">
+                        <h2><i class="fa-solid fa-shield-halved fa-beat" style="--fa-animation-duration: 3s;"></i> WQI Score & Health Evaluation</h2>
+                        <span class="status-pill safe" id="status-pill-badge">Safe Drinking Water</span>
+                    </div>
+
+                    <div class="gauge-wrapper">
+                        <div class="wqi-circle">
+                            <svg class="progress-ring" width="200" height="200">
+                                <circle class="progress-ring-bg" stroke="rgba(255,255,255,0.06)" stroke-width="16" fill="transparent" r="85" cx="100" cy="100"/>
+                                <circle class="progress-ring-bar" id="ring-bar" stroke="#00f2fe" stroke-width="16" stroke-dasharray="534" stroke-dashoffset="45" stroke-linecap="round" fill="transparent" r="85" cx="100" cy="100"/>
+                            </svg>
+                            <div class="ring-content">
+                                <span class="ring-score gradient-text" id="ring-score-text">91.5</span>
+                                <span class="ring-label">WQI SCORE</span>
+                            </div>
+                        </div>
+
+                        <div class="parameter-status-list" id="param-status-tags">
+                            <!-- Populated dynamically via JS -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- AI Purification Advisor Card -->
+                <section class="card ai-card glass-glow">
+                    <div class="card-header">
+                        <h2><i class="fa-solid fa-brain fa-bounce" style="--fa-animation-duration: 4s;"></i> AI Purification Advisor</h2>
+                        <span class="ai-sparkle"><i class="fa-solid fa-wand-magic-sparkles"></i> Live Chemical Matrix</span>
+                    </div>
+                    <p class="ai-intro">Targeted purification steps generated dynamically for active water parameters:</p>
+                    
+                    <div class="ai-advice-list" id="ai-advice-container">
+                        <!-- Dynamic AI Suggestions injected here -->
+                    </div>
+                </section>
+
+            </div>
+        </div>
+
+        <!-- Hostel Tank Maintenance & Filter Lifespan Tracker -->
+        <section class="card maintenance-card">
+            <div class="card-header">
+                <h2><i class="fa-solid fa-screwdriver-wrench"></i> Hostel Water Maintenance & Filter Health Tracker</h2>
+                <span class="pill-info"><i class="fa-solid fa-clock-rotate-left"></i> Real-time Equipment Telemetry</span>
+            </div>
+
+            <div class="maintenance-grid">
+                <div class="m-card">
+                    <div class="m-header">
+                        <span><i class="fa-solid fa-filter"></i> RO Membrane Efficiency</span>
+                        <strong class="text-cyan">94%</strong>
+                    </div>
+                    <div class="m-bar"><div class="m-fill cyan" style="width: 94%;"></div></div>
+                    <small>Next Cleaning: 45 Days</small>
+                </div>
+
+                <div class="m-card">
+                    <div class="m-header">
+                        <span><i class="fa-solid fa-lightbulb"></i> UV Disinfection Lamp</span>
+                        <strong class="text-green">98%</strong>
+                    </div>
+                    <div class="m-bar"><div class="m-fill green" style="width: 98%;"></div></div>
+                    <small>Lifespan Remaining: 7,200 Hours</small>
+                </div>
+
+                <div class="m-card">
+                    <div class="m-header">
+                        <span><i class="fa-solid fa-layer-group"></i> Sand Bed Filter</span>
+                        <strong class="text-orange">78%</strong>
+                    </div>
+                    <div class="m-bar"><div class="m-fill orange" style="width: 78%;"></div></div>
+                    <small>Backwash Required in 3 Days</small>
+                </div>
+
+                <div class="m-card">
+                    <div class="m-header">
+                        <span><i class="fa-solid fa-shower"></i> Overhead Tank Sanitation</span>
+                        <strong class="text-purple">100% Clean</strong>
+                    </div>
+                    <div class="m-bar"><div class="m-fill purple" style="width: 100%;"></div></div>
+                    <small>Last Sanitized: 10 Days Ago</small>
+                </div>
+            </div>
+        </section>
+
+        <!-- Historical Analytics Chart Section -->
+        <section class="card chart-card">
+            <div class="card-header">
+                <h2><i class="fa-solid fa-chart-line fa-beat-fade" style="--fa-animation-duration: 4s;"></i> Hostel Water Quality Index (WQI) Analytics</h2>
+                <div class="chart-legend-tags">
+                    <span class="legend-dot excelente"></span> >90 Excellent
+                    <span class="legend-dot good"></span> 75-90 Good
+                    <span class="legend-dot warning"></span> 50-75 Poor
+                    <span class="legend-dot danger"></span> <50 Critical
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="wqiChart"></canvas>
+            </div>
+        </section>
+
+        <!-- CSV Data Logs & Chemistry Theory Section -->
+        <div class="bottom-grid">
+            
+            <!-- CSV Table Logs -->
+            <section class="card table-card">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-database"></i> Hostel Water Sampling Database</h2>
+                    <div class="table-actions">
+                        <label for="csv-file-input" class="btn btn-outline btn-sm">
+                            <i class="fa-solid fa-upload"></i> Import CSV
+                        </label>
+                        <input type="file" id="csv-file-input" accept=".csv" style="display: none;">
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="data-table" id="records-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Location</th>
+                                <th>pH</th>
+                                <th>TDS</th>
+                                <th>Hardness</th>
+                                <th>Coliform</th>
+                                <th>WQI</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body">
+                            <!-- Loaded from JS / CSV -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Engineering Chemistry Reference Card -->
+            <section class="card theory-card">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-book-journal-whills"></i> Engineering Chemistry Handbook</h2>
+                    <span class="pill-info">R23 Curriculum Standard</span>
+                </div>
+                
+                <div class="theory-content">
+                    <div class="theory-item">
+                        <h4><i class="fa-solid fa-atom"></i> Water Quality Index (WQI) Equation</h4>
+                        <p>Weighted Arithmetic Index Equation:</p>
+                        <div class="formula-box">
+                            $$WQI = 100 - \left( \frac{\sum_{i=1}^{n} Q_i \cdot W_i}{\sum_{i=1}^{n} W_i} \times 0.5 \right)$$
+                        </div>
+                        <p class="formula-desc">Where \(Q_i = \frac{V_i - V_{ideal}}{S_i - V_{ideal}} \times 100\), \(V_i\) is actual parameter value, and \(S_i\) is standard permissible limit.</p>
+                    </div>
+
+                    <div class="theory-item">
+                        <h4><i class="fa-solid fa-vial-circle-check"></i> Parameter BIS IS:10500 Guidelines</h4>
+                        <ul class="chem-list">
+                            <li><strong>pH (6.5 - 8.5)</strong>: Hydrogen ion concentration indicator.</li>
+                            <li><strong>TDS (< 500 mg/L)</strong>: Total Dissolved Inorganic & Organic mineral salts.</li>
+                            <li><strong>Hardness (< 300 mg/L)</strong>: \(Ca^{2+}\) and \(Mg^{2+}\) mineral scaling factor.</li>
+                            <li><strong>Coliform (0 MPN/100ml)</strong>: Biological pathogen indicator.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+    </main>
+
+    <!-- Modal 1: Chemical Parameter Knowledge Base Modal -->
+    <div id="modal-chem" class="modal-backdrop hidden">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 id="modal-chem-title"><i class="fa-solid fa-flask"></i> Parameter Details</h3>
+                <button class="modal-close" onclick="closeModal('modal-chem')">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-chem-body">
+                <!-- Content dynamically filled -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 2: Tank Comparison Matrix Modal -->
+    <div id="modal-compare" class="modal-backdrop hidden">
+        <div class="modal-card modal-lg">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-code-compare"></i> Side-by-Side Hostel Tank Water Comparison</h3>
+                <button class="modal-close" onclick="closeModal('modal-compare')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="compare-grid" id="compare-container">
+                    <!-- Populated via JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 3: Official Water Lab Certificate Print Modal -->
+    <div id="modal-cert" class="modal-backdrop hidden">
+        <div class="modal-card modal-lg">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-file-contract"></i> Official Water Quality Test Certificate</h3>
+                <button class="modal-close" onclick="closeModal('modal-cert')">&times;</button>
+            </div>
+            <div class="modal-body printable-cert" id="printable-certificate">
+                <div class="cert-border">
+                    <div class="cert-header">
+                        <h2>DEPARTMENT OF ENGINEERING CHEMISTRY</h2>
+                        <h3>HOSTEL WATER QUALITY TESTING LABORATORY</h3>
+                        <p>Certified Analysis Report - BIS IS:10500 Compliance</p>
+                    </div>
+
+                    <div class="cert-details">
+                        <div><strong>Report ID:</strong> <span id="cert-id">HYD-2026-9942</span></div>
+                        <div><strong>Sampling Date:</strong> <span id="cert-date">2026-07-28</span></div>
+                        <div><strong>Water Source:</strong> <span id="cert-location">Block A - Overhead Tank</span></div>
+                        <div><strong>Overall Status:</strong> <span id="cert-status" class="text-cyan">SAFE DRINKING WATER</span></div>
+                    </div>
+
+                    <table class="cert-table">
+                        <thead>
+                            <tr>
+                                <th>Chemical Parameter</th>
+                                <th>Tested Value</th>
+                                <th>BIS IS:10500 Standard</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cert-table-body">
+                            <!-- Injected dynamically -->
+                        </tbody>
+                    </table>
+
+                    <div class="cert-footer">
+                        <div>
+                            <p><strong>Calculated WQI Score:</strong> <span id="cert-wqi">91.5 / 100</span></p>
+                            <p><strong>Chief Chemist Signature:</strong> ________________________</p>
+                        </div>
+                        <div class="cert-stamp">
+                            <i class="fa-solid fa-certificate"></i> VERIFIED LAB STAMP
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="window.print()"><i class="fa-solid fa-print"></i> Print Official Certificate</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Water Purity Tracker for Hostel &copy; 2026 | Engineering Chemistry & Programming Portfolio Project</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
